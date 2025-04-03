@@ -29,18 +29,19 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Extract short commit
+      - name: Extract short commit SHA
         id: vars
         run: echo "COMMIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image (no-cache)
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: docker/frigate-coral-x64.Dockerfile  # ✅ Your optimized Dockerfile
+          file: docker/frigate-coral-x64.Dockerfile
           platforms: linux/amd64
           push: true
+          no-cache: true
           tags: |
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/frigate:0.16-dev
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/frigate:0.16-dev-${{ env.COMMIT_SHA }}
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/frigate:latest
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:0.16-dev
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:0.16-dev-${{ env.COMMIT_SHA }}
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:latest
