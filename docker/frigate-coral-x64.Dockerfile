@@ -1,10 +1,7 @@
 # Frigate 0.16 optimized for Coral + CPU on x86_64
-FROM python:3.11-slim-bookworm
+FROM python:3.11-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Ensure we're running as root
-USER root
 
 # Install required Debian packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -34,11 +31,9 @@ RUN curl -sSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key ad
 RUN curl -sSL https://coral.googlesource.com/edgetpu/+/refs/heads/release/edgetpu_api/99-edgetpu-accelerator.rules?format=TEXT \
  | base64 -d > /etc/udev/rules.d/99-edgetpu-accelerator.rules
 
-# Workdir for Frigate
 WORKDIR /opt/frigate
 COPY . .
 
-# Install Python dependencies
 RUN pip install --no-cache-dir .
 
 # Optional healthcheck
