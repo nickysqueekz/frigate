@@ -3,7 +3,10 @@ FROM python:3.11-slim-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# ---- Install system and runtime packages ----
+# Ensure we're running as root
+USER root
+
+# Install required Debian packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libglib2.0-0 \
@@ -21,32 +24,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     udev \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ---- Install Coral EdgeTPU runtime (max performance) ----
+# Install Coral EdgeTPU runtime
 RUN curl -sSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
  && echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" > /etc/apt/sources.list.d/coral-edgetpu.list \
- && apt-get update && apt-get install -y --no-install-recommends \
-    libedgetpu1-max \
+ && apt-get update && apt-get install -y --no-install-recommends libedgetpu1-max \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ---- Add Coral USB udev rules ----
+# Coral USB udev rules
 RUN curl -sSL https://coral.googlesource.com/edgetpu/+/refs/heads/release/edgetpu_api/99-edgetpu-accelerator.rules?format=TEXT \
  | base64 -d > /etc/udev/rules.d/99-edgetpu-accelerator.rules
 
-# ---- Copy Frigate source ----
+# Workdir for Frigate
 WORKDIR /opt/frigate
 COPY . .
 
-# ---- Install Frigate dependencies ----
+# Install Python dependencies
 RUN pip install --no-cache-dir .
 
-# ---- Healthcheck script (optional, if provided) ----
+# Optional healthcheck
 # COPY healthcheck.sh /healthcheck.sh
 # RUN chmod +x /healthcheck.sh
 # HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 #   CMD /healthcheck.sh
 
-# ---- Expose ports ----
 EXPOSE 5000 8554 8555 1935 8880
 
-# ---- Default entrypoint ----
 CMD ["frigate"]
