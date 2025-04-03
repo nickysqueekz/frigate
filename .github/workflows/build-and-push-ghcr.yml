@@ -37,10 +37,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: docker/main/Dockerfile
+          file: docker/frigate-coral-x64.Dockerfile  # ✅ Your optimized Dockerfile
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:0.16-dev
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:0.16-dev-${{ env.COMMIT_SHA }}
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/frigate:0.16-dev
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/frigate:0.16-dev-${{ env.COMMIT_SHA }}
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/frigate:latest
