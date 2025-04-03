@@ -19,7 +19,7 @@ jobs:
       - name: Checkout full repository (not shallow)
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # ✅ Ensures no missing files
+          fetch-depth: 0  # ✅ Ensures full clone, no missing files
 
       - name: Debug: List contents of frigate/
         run: ls -alh frigate/
