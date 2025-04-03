@@ -16,24 +16,29 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout code
+      - name: Checkout full repository (not shallow)
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # ✅ Ensures no missing files
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Debug: List contents of frigate/
+        run: ls -alh frigate/
 
-      - name: Log in to GHCR
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.CR_PAT }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Extract short commit SHA
         id: vars
         run: echo "COMMIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Build and push Docker image (no-cache)
+      - name: Build and push Frigate image
         uses: docker/build-push-action@v5
         with:
           context: .
