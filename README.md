@@ -2,7 +2,7 @@
   <img align="center" alt="logo" src="docs/static/img/frigate.png"> 
 </p>
 
-# Frigate - NVR With Realtime Object Detection for IP Cameras
+# Frigate - NVR With Realtime Object Detection for IP Cameras 
 
 \[English\] | [简体中文](https://github.com/blakeblackshear/frigate/README_CN.md)
 
