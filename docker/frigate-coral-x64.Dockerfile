@@ -10,17 +10,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsm6 \
     libxrender1 \
     libxext6 \
-    libgl1 \
+    libgl1-mesa-glx \
     curl \
     ca-certificates \
-    libatlas-base-dev \
     libopenjp2-7 \
     libtiff5 \
-    libturbojpeg0 \
+    libjpeg62-turbo \
     nano \
     htop \
     udev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ---- Install Coral EdgeTPU runtime (max performance) ----
 RUN curl -sSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
@@ -33,19 +32,21 @@ RUN curl -sSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key ad
 RUN curl -sSL https://coral.googlesource.com/edgetpu/+/refs/heads/release/edgetpu_api/99-edgetpu-accelerator.rules?format=TEXT \
  | base64 -d > /etc/udev/rules.d/99-edgetpu-accelerator.rules
 
-# ---- Workdir and source copy ----
+# ---- Copy Frigate source ----
 WORKDIR /opt/frigate
 COPY . .
 
-# ---- Install Frigate and dependencies ----
+# ---- Install Frigate dependencies ----
 RUN pip install --no-cache-dir .
 
-# ---- Expose Frigate ports ----
+# ---- Healthcheck script (optional, if provided) ----
+# COPY healthcheck.sh /healthcheck.sh
+# RUN chmod +x /healthcheck.sh
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+#   CMD /healthcheck.sh
+
+# ---- Expose ports ----
 EXPOSE 5000 8554 8555 1935 8880
 
-# ---- Healthcheck (optional) ----
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:5000 || exit 1
-
-# ---- Run Frigate ----
+# ---- Default entrypoint ----
 CMD ["frigate"]
