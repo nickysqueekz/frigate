@@ -60,8 +60,8 @@ jobs:
           provenance: false
           sbom: false
           outputs: type=registry
-          build-args: |
-            PROGRESS=plain
+          build-args:
+            - PROGRESS=plain
           tags: |
             ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:0.16-dev
             ghcr.io/${{ secrets.GHCR_USERNAME }}/${{ env.IMAGE_NAME }}:0.16-dev-${{ env.COMMIT_SHA }}
