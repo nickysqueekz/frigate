@@ -23,20 +23,15 @@ jobs:
 
       - name: Show environment info
         run: |
-          echo "== Runner Info =="
           uname -a
           cat /etc/os-release
 
-      - name: Debug: List source tree
+      - name: Confirm Dockerfile is present
         run: |
-          echo "== Root =="
-          ls -alh
-          echo "== docker/ =="
-          ls -alh docker/
-          echo "== frigate/ =="
-          ls -alh frigate/ || true
+          echo "== Checking for Dockerfile =="
+          test -f docker/frigate-coral-x64.Dockerfile && echo "Dockerfile found ✅" || (echo "❌ Dockerfile missing!" && exit 1)
 
-      - name: Log in to GHCR
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -49,7 +44,7 @@ jobs:
       - name: Extract short commit SHA
         run: echo "COMMIT_SHA=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
 
-      - name: Build and push Frigate Docker image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -59,7 +54,6 @@ jobs:
           no-cache: true
           provenance: false
           sbom: false
-          outputs: type=registry
           build-args:
             - PROGRESS=plain
           tags: |
